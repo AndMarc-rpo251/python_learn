@@ -1,63 +1,91 @@
+
 import tkinter as tk
-def press(value):
-    if value == "=":
-        try:
-            result = eval(expression.get())
-            expression.set(str(result))
-        except:
-            expression.set("Ошибка")
-            window.after(1500, reset)
-
-    elif value == "C":
-        expression.set("")
-    else:
-        expression.set(expression.get() + value)
-
-
-def reset():
-    expression.set("")
-
+import math
 
 window = tk.Tk()
 window.title("Калькулятор")
-window.geometry("300x400")
+window.geometry("400x450")
 window.resizable(False, False)
 
-expression = tk.StringVar()
+entry = tk.Entry(window, justify="right", font=("Arial", 18))
+entry.pack(fill="x", padx=20, pady=10)
 
-display = tk.Entry(
-    window,
-    textvariable=expression,
-    font=("Arial", 24),
-    justify="right",
-    state="readonly"
-)
-display.pack(fill="both", padx=10, pady=10, ipady=10)
+def add(value):
+    entry.insert(tk.END, value)
+
+def clear():
+    entry.delete(0, tk.END)
+
+def calculate():
+    try:
+        result = eval(entry.get())
+        entry.delete(0, tk.END)
+        entry.insert(0, result)
+    except:
+        entry.delete(0, tk.END)
+        entry.insert(0, "Ошибка")
 
 buttons = [
-    ("1", 1, 0), ("2", 1, 1), ("3", 1, 2), ("/", 1, 3),
-    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
-    ("7", 3, 0), ("8", 3, 1), ("9", 3, 2), ("-", 3, 3),
-    ("C", 4, 0), ("0", 4, 1), ("=", 4, 2), ("+", 4, 3),
+    "7", "8", "9", "/",
+    "4", "5", "6", "*",
+    "1", "2", "3", "-",
+    "0", ".", "=", "+",
+    "C"
 ]
 
-frame = tk.Frame(window)
-frame.pack(expand=True, fill="both", padx=10, pady=10)
+actions = {
+    "7": lambda: add("7"),
+    "8": lambda: add("8"),
+    "9": lambda: add("9"),
+    "/": lambda: add("/"),
+    "4": lambda: add("4"),
+    "5": lambda: add("5"),
+    "6": lambda: add("6"),
+    "*": lambda: add("*"),
+    "1": lambda: add("1"),
+    "2": lambda: add("2"),
+    "3": lambda: add("3"),
+    "-": lambda: add("-"),
+    "0": lambda: add("0"),
+    ".": lambda: add("."),
+    "=": calculate,
+    "+": lambda: add("+"),
+    "C": clear
+}
 
-for text, row, column in buttons:
-    button = tk.Button(frame, text=text, font=("Arial", 20), command=lambda value=text: press(value))
-    button.grid(
-        row=row,
-        column=column,
-        sticky="nsew",
-        padx=3,
-        pady=3
+canvas = tk.Frame(window, width=360, height=350)
+canvas.pack()
+canvas.pack_propagate(False)
+
+radius = 125
+center_x = 180
+center_y = 175
+button_size = 40
+
+i = 0
+total = len(buttons)
+
+while i < total:
+    angle = 2 * math.pi * i / total - math.pi / 2
+
+    x = center_x + radius * math.cos(angle)
+    y = center_y + radius * math.sin(angle)
+
+    button = tk.Button(
+        canvas,
+        text=buttons[i],
+        width=3,
+        height=1,
+        font=("Arial", 12),
+        command=actions[buttons[i]]
     )
 
-for i in range(4):
-    frame.columnconfigure(i, weight=1)
+    button.place(
+        x=x,
+        y=y,
+        anchor="center"
+    )
 
-for i in range(1, 5):
-    frame.rowconfigure(i, weight=1)
+    i += 1
 
 window.mainloop()
