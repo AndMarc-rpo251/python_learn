@@ -1,63 +1,38 @@
-import tkinter as tk
-def press(value):
-    if value == "=":
-        try:
-            result = eval(expression.get())
-            expression.set(str(result))
-        except:
-            expression.set("Ошибка")
-            window.after(1500, reset)
+"""Task Manager - точка входа и сборка проекта.
 
-    elif value == "C":
-        expression.set("")
-    else:
-        expression.set(expression.get() + value)
+Запуск (из папки TM):
+
+    python src/interface.py
+
+Проект разбит на модули (все лежат рядом, в папке src):
+    config.py       - версия, пути, подписи, параметры окна
+    utils.py        - мелкие помощники (время, сортировка)
+    core.py         - модель Task и логика TaskManager
+    storage_file.py - чтение/запись JSON (папка JSON)
+    view.py         - окно tkinter
+    interface.py    - этот файл: собирает всё вместе и запускает окно
+"""
+import sys
+
+try:
+    import tkinter  # noqa: F401  (только проверяем, что tkinter установлен)
+except ImportError as err:
+    # На Linux tkinter ставится отдельно от Python
+    print(f"Не удалось загрузить tkinter: {err}")
+    print("Linux: sudo apt install python3-tk")
+    sys.exit(1)
+
+from core import TaskManager
+from storage_file import JsonStorage
+from view import App
 
 
-def reset():
-    expression.set("")
+def main() -> None:
+    """Собрать части проекта и запустить окно."""
+    storage = JsonStorage()         # где хранить: JSON/tasks.json
+    manager = TaskManager(storage)  # что делать с задачами
+    App(manager).mainloop()         # как показывать
 
 
-window = tk.Tk()
-window.title("Калькулятор")
-window.geometry("300x400")
-window.resizable(False, False)
-
-expression = tk.StringVar()
-
-display = tk.Entry(
-    window,
-    textvariable=expression,
-    font=("Arial", 24),
-    justify="right",
-    state="readonly"
-)
-display.pack(fill="both", padx=10, pady=10, ipady=10)
-
-buttons = [
-    ("1", 1, 0), ("2", 1, 1), ("3", 1, 2), ("/", 1, 3),
-    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
-    ("7", 3, 0), ("8", 3, 1), ("9", 3, 2), ("-", 3, 3),
-    ("C", 4, 0), ("0", 4, 1), ("=", 4, 2), ("+", 4, 3),
-]
-
-frame = tk.Frame(window)
-frame.pack(expand=True, fill="both", padx=10, pady=10)
-
-for text, row, column in buttons:
-    button = tk.Button(frame, text=text, font=("Arial", 20), command=lambda value=text: press(value))
-    button.grid(
-        row=row,
-        column=column,
-        sticky="nsew",
-        padx=3,
-        pady=3
-    )
-
-for i in range(4):
-    frame.columnconfigure(i, weight=1)
-
-for i in range(1, 5):
-    frame.rowconfigure(i, weight=1)
-
-window.mainloop()
+if __name__ == "__main__":
+    main()
