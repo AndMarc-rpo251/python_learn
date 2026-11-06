@@ -38,6 +38,8 @@ ALL_FILTER = "Все"  # пункт фильтра «показывать всё
 WINDOW_SIZE = "900x580"
 WINDOW_MIN_SIZE = (700, 440)
 SEARCH_DELAY_MS = 200       # пауза после ввода в поиск, прежде чем обновить таблицу
+RESOURCE_DIR = Path(getattr(sys, "_MEIPASS", BASE_DIR))
+ICON_FILE = RESOURCE_DIR / "icon.ico"
 
 # Столбцы таблицы: ключ -> (заголовок, ширина)
 COLUMNS = {
