@@ -97,6 +97,11 @@ class App(tk.Tk):
     def __init__(self, manager: TaskManager):
         super().__init__()
         self.title(f"Task Manager {__version__}")
+        try:
+            if ICON_FILE.exists():
+                self.iconbitmap(str(ICON_FILE))
+        except tk.TclError:
+            pass
         self.geometry(WINDOW_SIZE)
         self.minsize(*WINDOW_MIN_SIZE)
         self.manager = manager
