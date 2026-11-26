@@ -35,7 +35,6 @@ squares_comprehension = [n ** 2 for n in numbers]
 print("5) Квадраты через for:", squares_loop)
 print("   Квадраты через comprehension:", squares_comprehension)
 
-# Проверка из задания
 assert isinstance(numbers, list)
 assert isinstance(products, dict)
 assert isinstance(unique_tags, set)
